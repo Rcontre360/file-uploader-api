@@ -8,3 +8,9 @@ interface User {
   email: string;
   password: string;
 }
+
+declare module NodeJS {
+  interface Global {
+    appRoot: string;
+  }
+}

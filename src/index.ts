@@ -1,8 +1,10 @@
-import config from "./config";
 import express from "express";
+import path from "path";
+import config from "./config";
 import loaders from "./loaders";
 
 const port = config.port;
+(global as any).appRoot = path.resolve(__dirname, "../");
 
 const start = async () => {
   const app = express();

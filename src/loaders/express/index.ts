@@ -1,12 +1,14 @@
 import express from "express";
 import cors from "cors";
 import auth from "./auth";
+import files from "./files";
 
 export default ({ app }: { app: express.Application }) => {
   app.use(cors());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   auth({ app });
+  files({ app });
 
   app.use((req, res, next) => {
     const err = new Error("Not Found");
