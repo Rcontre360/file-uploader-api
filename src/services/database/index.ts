@@ -3,9 +3,9 @@ import db from "../../loaders/database";
 class MysqlDatabase implements Database {
   createUser = (user: User) =>
     new Promise<User>((resolve) => {
-      const params = [user.name, user.email, user.password];
+      const params = [user.userName, user.email, user.userPassword, user.salt];
       db.query(
-        "INSERT INTO users(userName,email,userPassword) VALUES(?,?,?)",
+        "INSERT INTO users(userName,email,userPassword,salt) VALUES(?,?,?,?)",
         params,
         (error, results, fields) => {
           if (error) throw error;
@@ -13,11 +13,11 @@ class MysqlDatabase implements Database {
         }
       );
     });
-  findUsers = (user: User) =>
+  findUsers = (data: { email: string }) =>
     new Promise<User[]>((resolve) => {
-      const params = [user.name, user.email, user.password];
+      const params = [data.email];
       db.query(
-        "SELECT * FROM users WHERE userName = ? AND email = ? AND userPassword = ?",
+        "SELECT * FROM users WHERE email = ?",
         params,
         (error, results, fields) => {
           if (error) throw error;
@@ -25,6 +25,7 @@ class MysqlDatabase implements Database {
         }
       );
     });
+  createFile = (file: unknown) => new Promise<unknown>((resolve) => {});
 }
 
 export default MysqlDatabase;

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import joi from "joi";
+import argon2 from "argon2";
 import Database from "@services/database";
 import AuthService from "@controllers/auth";
 import { validationMiddleware } from "@shared/index";
@@ -22,17 +23,30 @@ export default ({ app }: { app: Router }) => {
     async (req, res, next) => {
       try {
         const auth = new AuthService({ database: new Database() });
-        const user = await auth.signup(req.body);
-        return res.status(201).json({ user });
+        const { user, token } = await auth.signup(req.body, argon2.hash);
+        return res.status(201).json({ user, token });
       } catch (err) {
         next(err);
       }
     }
   );
 
-  route.post("/login", (req, res) => {
-    res.send("login");
-  });
+  route.post(
+    "/login",
+    validationMiddleware(
+      joi.object({
+        email: joi
+          .string()
+          .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } }),
+        password: joi.string().required().min(5),
+      })
+    ),
+    async (req, res) => {
+      const auth = new AuthService({ database: new Database() });
+      const { user, token } = await auth.login(req.body, argon2.verify);
+      res.status(201).json({ user, token });
+    }
+  );
 
   route.post("/logout", (req, res) => {
     res.send("logout");

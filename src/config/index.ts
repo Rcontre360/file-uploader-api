@@ -18,4 +18,8 @@ export default {
     port: process.env.DATABASE_PORT,
     url: isDevelopment ? "localhost" : process.env.DATABASE_URL,
   },
+  mailer: {
+    email: process.env.EMAIL_NAME,
+    password: process.env.EMAIL_PASSWORD,
+  },
 };

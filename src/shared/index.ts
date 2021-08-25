@@ -6,6 +6,7 @@ export const validationMiddleware =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const value = await schema.validateAsync(req.body);
+      next();
     } catch (err) {
       next(err);
     }
