@@ -1,6 +1,8 @@
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
+import MailService from "@services/email";
 import config from "@config/index";
+import Mail from "nodemailer/lib/mailer";
 
 class AuthService {
   private database: Database;
@@ -25,6 +27,12 @@ class AuthService {
       salt: String(salt),
     });
     const token = this.createToken(userCreated);
+    const mailer = new MailService();
+
+    await mailer.sendConfirmationEmail({
+      email: user.email,
+      userName: user.userName,
+    });
 
     delete userCreated.userPassword;
     return { user: userCreated, token };

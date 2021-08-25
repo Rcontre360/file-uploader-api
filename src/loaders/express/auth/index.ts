@@ -16,8 +16,8 @@ export default ({ app }: { app: Router }) => {
         email: joi
           .string()
           .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } }),
-        password: joi.string().required().min(5),
-        repeatPassword: joi.ref("password"),
+        userPassword: joi.string().required().min(5),
+        repeatPassword: joi.ref("userPassword"),
       })
     ),
     async (req, res, next) => {
