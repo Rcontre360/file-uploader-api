@@ -1,16 +1,22 @@
 interface Database {
   createUser(user: User): Promise<User>;
   findUsers(data: { email: string }): Promise<User[]>;
-  createFile(file: unknown): Promise<unknown>;
+  updateUser(fields: Partial<User>, userId: string): Promise<boolean>;
+
+  createFile(file: UserFile): Promise<UserFile>;
+  getFiles(userId: string): Promise<UserFile[]>;
+  deleteFile(fileId: string): Promise<UserFile>;
 }
 
 interface EmailService {
   sendConfirmationEmail({
     email,
     userName,
+    userId,
   }: {
     email: string;
     userName: string;
+    userId: string;
   }): Promise<unknown>;
   sendChangePasswordEmail({
     email,
@@ -23,10 +29,19 @@ interface EmailService {
 
 interface User {
   id?: string;
+  isVerified: boolean;
   userName: string;
   email: string;
   userPassword: string;
   salt?: string;
+}
+
+interface UserFile {
+  id: string;
+  userId: string;
+  mimeType: string;
+  fileName: string;
+  size: number;
 }
 
 declare module NodeJS {

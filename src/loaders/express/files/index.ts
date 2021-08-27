@@ -1,28 +1,32 @@
 import { Router } from "express";
-import path from "path";
-import multer from "multer";
+import { authorizationMiddleware, uploaderMiddleware } from "@shared/index";
+import auth from "../auth";
 
 const route = Router();
-const maxSize = 2 * 1024 * 1024;
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    console.log(file);
-    cb(null, path.resolve((global as any).appRoot, "./public/uploads"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-
-const uploadFile = multer({
-  storage: storage,
-  limits: { fileSize: maxSize },
-}).single("file");
 
 export default ({ app }: { app: Router }) => {
-  route.post("/file", uploadFile, async (req, res, next) => {
-    console.log("FOUND");
+  route.post(
+    "/files",
+    authorizationMiddleware,
+    uploaderMiddleware,
+    async (req, res) => {
+      console.log(req.file);
+      res.send(201);
+    }
+  );
+
+  route.delete("/files/:fileId", authorizationMiddleware, async (req, res) => {
+    res;
+    res.send(201);
+  });
+
+  route.get("/files/:userId", authorizationMiddleware, async (req, res) => {
+    res;
+    res.send(201);
+  });
+
+  route.get("/files/:fileId", authorizationMiddleware, async (req, res) => {
+    res;
     res.send(201);
   });
 

@@ -1,13 +1,16 @@
 import nodemailer from "nodemailer";
+import welcomeTemplate from "@services/email/welcomeTemplate";
 import config from "@config/index";
 
 class NodeMailerService implements EmailService {
   sendConfirmationEmail = async ({
     email,
     userName,
+    userId,
   }: {
     email: string;
     userName: string;
+    userId: string;
   }) => {
     let transporter = nodemailer.createTransport({
       service: "Gmail",
@@ -20,12 +23,13 @@ class NodeMailerService implements EmailService {
       from: config.mailer.email,
       to: email,
       subject: `Welcome ${userName}`,
-      text: "Hello world?",
-      html: "<b>Hello world?<",
+      html: welcomeTemplate({
+        userName,
+        loginUrl: `${config.url}/verify/${email}/${userId}`,
+      }),
     };
     try {
-      const response = await transporter.sendMail(mailOptions);
-      console.log(response);
+      await transporter.sendMail(mailOptions);
       return true;
     } catch (e) {
       throw e;

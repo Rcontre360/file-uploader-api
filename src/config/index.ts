@@ -9,8 +9,11 @@ if (envFound.error) {
 }
 
 export default {
+  host: process.env.HOST,
   port: process.env.PORT,
+  url: process.env.URL,
   jwtSecret: process.env.JWT_SECRET,
+  jwtAlgorithm: process.env.JWT_ALGORITHM,
   database: {
     user: process.env.DATABASE_USER,
     name: process.env.DATABASE_NAME,

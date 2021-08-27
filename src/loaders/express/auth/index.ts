@@ -43,13 +43,22 @@ export default ({ app }: { app: Router }) => {
     ),
     async (req, res) => {
       const auth = new AuthService({ database: new Database() });
-      const { user, token } = await auth.login(req.body, argon2.verify);
-      res.status(201).json({ user, token });
+      const { user } = await auth.login(req.body, argon2.verify);
+      res.status(201).json({ user });
     }
   );
 
+  route.get("/verify/:email/:id", async (req, res) => {
+    const { id, email } = req.params;
+    const auth = new AuthService({ database: new Database() });
+    const { user, token } = await auth.verifyUser({ email, id });
+    res.status(201).json({ user, token });
+  });
+
+  //TODO
   route.post("/logout", (req, res) => {
     res.send("logout");
   });
+
   app.use(route);
 };

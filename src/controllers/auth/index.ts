@@ -1,5 +1,6 @@
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
+import { v4 as uuid } from "uuid";
 import MailService from "@services/email";
 import config from "@config/index";
 import Mail from "nodemailer/lib/mailer";
@@ -22,8 +23,11 @@ class AuthService {
     if (existingUser.length > 0) throw new Error("User cannot be signed up");
 
     const userCreated = await this.database.createUser({
-      ...user,
+      userName: user.userName,
+      email: user.email,
       userPassword: userHash,
+      isVerified: false,
+      id: uuid(),
       salt: String(salt),
     });
     const token = this.createToken(userCreated);
@@ -32,6 +36,7 @@ class AuthService {
     await mailer.sendConfirmationEmail({
       email: user.email,
       userName: user.userName,
+      userId: userCreated.id,
     });
 
     delete userCreated.userPassword;
@@ -42,17 +47,27 @@ class AuthService {
     { email, password }: { email: string; password: string },
     verify: (hashedPassword: string, password: string) => Promise<boolean>
   ) => {
-    const queryResponse = await this.database.findUsers({ email });
-    if (queryResponse.length <= 0) throw new Error("User cannot be logged");
+    const userQuery = await this.database.findUsers({ email });
+    if (userQuery.length <= 0 || !userQuery[0].isVerified)
+      throw new Error("User cannot be logged");
 
-    const isValidPassword = await verify(
-      queryResponse[0].userPassword,
-      password
-    );
+    const isValidPassword = await verify(userQuery[0].userPassword, password);
+
     if (!isValidPassword) throw new Error("Invalid password");
+    if (!userQuery[0].isVerified) throw new Error("User is not verified");
 
-    const token = this.createToken(queryResponse[0]);
-    return { user: queryResponse[0], token };
+    return { user: userQuery[0] };
+  };
+
+  verifyUser = async ({ email, id }: { email: string; id: string }) => {
+    const userQuery = await this.database.findUsers({ email });
+    if (!userQuery[0]) throw new Error("User not found");
+
+    this.database.updateUser({ isVerified: true }, id);
+
+    const token = this.createToken(userQuery[0]);
+
+    return { user: userQuery[0], token };
   };
 
   private createToken = (user: User) => {
