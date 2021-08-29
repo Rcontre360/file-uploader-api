@@ -23,7 +23,7 @@ export default ({ app }: { app: express.Application }) => {
   app.use((err: any, req: any, res: any, next: any) => {
     res.status(err.status || 500);
     res.json({
-      message: err.message,
+      error: err.message,
     });
   });
 };

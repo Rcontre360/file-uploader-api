@@ -13,12 +13,13 @@ class NodeMailerService implements EmailService {
     userId: string;
   }) => {
     let transporter = nodemailer.createTransport({
-      service: "Gmail",
+      service: "gmail",
       auth: {
         user: config.mailer.email,
         pass: config.mailer.password,
       },
     });
+    console.log("auth", config.mailer);
     const mailOptions = {
       from: config.mailer.email,
       to: email,
