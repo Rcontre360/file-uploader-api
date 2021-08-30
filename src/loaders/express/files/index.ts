@@ -39,16 +39,20 @@ export default ({ app }: { app: Router }) => {
     res.status(201).json({ files });
   });
 
-  route.get("/files/:fileId", async (req, res, next) => {
-    const { fileId } = req.params;
-    const service = new FileService({ database: new MysqlDatabase() });
-    try {
-      const filePath = await service.getFile(fileId);
-      res.download(filePath);
-    } catch (err) {
-      next(err);
+  route.get(
+    "/files/:fileId",
+    authorizationMiddleware,
+    async (req, res, next) => {
+      const { fileId } = req.params;
+      const service = new FileService({ database: new MysqlDatabase() });
+      try {
+        const filePath = await service.getFile(fileId);
+        res.download(filePath);
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
   app.use(route);
 };
