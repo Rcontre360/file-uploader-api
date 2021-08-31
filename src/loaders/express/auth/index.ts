@@ -21,7 +21,6 @@ export default ({ app }: { app: Router }) => {
       })
     ),
     async (req, res, next) => {
-      console.log("signup", req.body);
       try {
         const auth = new AuthService({ database: new Database() });
         const { user, token } = await auth.signup(req.body, argon2.hash);
@@ -45,8 +44,8 @@ export default ({ app }: { app: Router }) => {
     async (req, res) => {
       console.log("login", req.body);
       const auth = new AuthService({ database: new Database() });
-      const { user } = await auth.login(req.body, argon2.verify);
-      res.status(201).json({ user });
+      const { user, token } = await auth.login(req.body, argon2.verify);
+      res.status(201).json({ user, token });
     }
   );
 

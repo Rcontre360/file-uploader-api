@@ -22,6 +22,7 @@ export const authorizationMiddleware = jwt({
   userProperty: "token",
   algorithms: [config.jwtAlgorithm], // JWT Algorithm
   getToken: (req) => {
+    console.log("unauthorized", req.headers.authorization);
     if (
       (req.headers.authorization &&
         req.headers.authorization.split(" ")[0] === "Token") ||

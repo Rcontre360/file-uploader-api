@@ -40,6 +40,7 @@ class AuthService {
     });
 
     delete userCreated.userPassword;
+    delete userCreated.salt;
     return { user: userCreated, token };
   };
 
@@ -56,7 +57,11 @@ class AuthService {
     if (!isValidPassword) throw new Error("Invalid password");
     if (!userQuery[0].isVerified) throw new Error("User is not verified");
 
-    return { user: userQuery[0] };
+    const token = this.createToken(userQuery[0]);
+
+    delete userQuery[0].userPassword;
+    delete userQuery[0].salt;
+    return { user: userQuery[0], token };
   };
 
   verifyUser = async ({ email, id }: { email: string; id: string }) => {
@@ -67,6 +72,8 @@ class AuthService {
 
     const token = this.createToken(userQuery[0]);
 
+    delete userQuery[0].userPassword;
+    delete userQuery[0].salt;
     return { user: userQuery[0], token };
   };
 
