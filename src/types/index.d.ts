@@ -3,7 +3,7 @@ interface Database {
   findUsers(data: { email: string }): Promise<User[]>;
   updateUser(fields: Partial<User>, userId: string): Promise<boolean>;
 
-  createFile(file: UserFile): Promise<UserFile>;
+  insertFiles(file: UserFile[]): Promise<UserFile[]>;
   getFiles(userId: string): Promise<UserFile[]>;
   deleteFile(fileId: string): Promise<UserFile>;
 }
@@ -42,6 +42,7 @@ interface UserFile {
   mimeType: string;
   fileName: string;
   size: number;
+  createdAt?: string;
 }
 
 declare module NodeJS {

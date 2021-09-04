@@ -13,15 +13,17 @@ export default ({ app }: { app: Router }) => {
     uploaderMiddleware,
     async (req, res) => {
       const { userId } = req.params;
-      const fileRequest = req.file as any;
+      const fileRequest = req.files as any[];
       const service = new FileService({ database: new MysqlDatabase() });
-      await service.createFile({
-        userId,
-        fileName: fileRequest.originalname as string,
-        mimeType: fileRequest.mimetype as string,
-        size: fileRequest.size as number,
-        id: fileRequest.filename as string,
-      });
+      await service.insertFiles(
+        fileRequest.map((file) => ({
+          userId,
+          fileName: file.originalname as string,
+          mimeType: file.mimetype as string,
+          size: file.size as number,
+          id: file.filename as string,
+        }))
+      );
       res.status(201).json({ message: "success" });
     }
   );

@@ -8,9 +8,9 @@ class FileService {
     this.database = database;
   }
 
-  createFile = async (file: UserFile) => {
-    await this.database.createFile(file);
-    return file;
+  insertFiles = async (files: UserFile[]) => {
+    await this.database.insertFiles(files);
+    return files;
   };
 
   getFile = (fileId: string) =>

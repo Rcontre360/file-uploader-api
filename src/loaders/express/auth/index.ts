@@ -41,11 +41,14 @@ export default ({ app }: { app: Router }) => {
         password: joi.string().required().min(5),
       })
     ),
-    async (req, res) => {
-      console.log("login", req.body);
-      const auth = new AuthService({ database: new Database() });
-      const { user, token } = await auth.login(req.body, argon2.verify);
-      res.status(201).json({ user, token });
+    async (req, res, next) => {
+      try {
+        const auth = new AuthService({ database: new Database() });
+        const { user, token } = await auth.login(req.body, argon2.verify);
+        res.status(201).json({ user, token });
+      } catch (err) {
+        next(err);
+      }
     }
   );
 

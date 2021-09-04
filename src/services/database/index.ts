@@ -41,16 +41,26 @@ class MysqlDatabase implements Database {
       );
     });
 
-  createFile = (file: UserFile) =>
-    new Promise<UserFile>((resolve) => {
-      const params = this.createQuery(
-        file as Record<keyof UserFile, UserFile[keyof UserFile]>
+  insertFiles = (files: UserFile[]) =>
+    new Promise<UserFile[]>((resolve) => {
+      const fields = Object.keys(files[0]).reduce(
+        (acc, cur) => `${acc ? acc + ", " : ""}${cur}`,
+        ""
       );
+      const values = files.reduce(
+        (acc, cur) =>
+          (acc ? acc + "," : "") +
+          `(${Object.values(cur)
+            .map((val) => `'${val}'`)
+            .join(", ")})`,
+        ""
+      );
+
       db.query(
-        `INSERT INTO user_files SET ${params}`,
+        `INSERT INTO user_files(${fields}) VALUES ${values};`,
         (error, results, fields) => {
           if (error) throw error;
-          resolve(file);
+          resolve(files);
         }
       );
     });

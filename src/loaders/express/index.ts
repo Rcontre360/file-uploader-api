@@ -23,7 +23,7 @@ export default ({ app }: { app: express.Application }) => {
     return next(err);
   });
   app.use((err: any, req: any, res: any, next: any) => {
-    console.log("error: ", err.message);
+    console.log("error: ", err.message, err.field);
     res.status(err.status || 500);
     res.json({
       error: err.message,
