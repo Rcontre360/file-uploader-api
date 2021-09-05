@@ -5,6 +5,7 @@ interface Database {
 
   insertFiles(file: UserFile[]): Promise<UserFile[]>;
   getFiles(userId: string): Promise<UserFile[]>;
+  getFile(fileId: string): Promise<UserFile>;
   deleteFile(fileId: string): Promise<UserFile>;
 }
 
@@ -42,6 +43,7 @@ interface UserFile {
   mimeType: string;
   fileName: string;
   size: number;
+  fileExtension: string;
   createdAt?: string;
 }
 

@@ -76,6 +76,17 @@ class MysqlDatabase implements Database {
       );
     });
 
+  getFile = (fileId: string) =>
+    new Promise<UserFile>((resolve) => {
+      db.query(
+        `SELECT * FROM user_files WHERE id = '${fileId}'`,
+        (error, results, fields) => {
+          if (error) throw error;
+          resolve(results[0]);
+        }
+      );
+    });
+
   deleteFile = (fileId: string) => new Promise<UserFile>((resolve) => {});
 
   private createQuery = (updatedFields: Record<string, unknown>) => {

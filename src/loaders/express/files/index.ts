@@ -3,6 +3,7 @@ import { authorizationMiddleware, uploaderMiddleware } from "@shared/index";
 import path from "path";
 import MysqlDatabase from "@services/database";
 import FileService from "@controllers/files";
+import { getFileExtension } from "@shared/index";
 
 const route = Router();
 
@@ -22,6 +23,7 @@ export default ({ app }: { app: Router }) => {
           mimeType: file.mimetype as string,
           size: file.size as number,
           id: file.filename as string,
+          fileExtension: getFileExtension(file.originalname),
         }))
       );
       res.status(201).json({ message: "success" });
@@ -38,18 +40,21 @@ export default ({ app }: { app: Router }) => {
     const { userId } = req.params;
     const service = new FileService({ database: new MysqlDatabase() });
     const files = await service.getFiles(userId);
+    console.log("GET", files);
     res.status(201).json({ files });
   });
 
   route.get(
     "/files/:fileId",
-    authorizationMiddleware,
+    //authorizationMiddleware,
     async (req, res, next) => {
       const { fileId } = req.params;
       const service = new FileService({ database: new MysqlDatabase() });
       try {
         const filePath = await service.getFile(fileId);
-        res.download(filePath);
+        res.download(filePath, (err) => {
+          if (err) next(err);
+        });
       } catch (err) {
         next(err);
       }

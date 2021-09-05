@@ -41,8 +41,14 @@ export const uploaderMiddleware = multer({
       cb(null, path.resolve((global as any).appRoot, "./public/uploads"));
     },
     filename: (req, file, cb) => {
-      cb(null, uuid());
+      cb(null, `${uuid()}.${getFileExtension(file.originalname)}`);
     },
   }),
   limits: { fileSize: maxSize },
 }).array("file");
+
+export const getFileExtension = (filename: string) => {
+  const reverse = (str: string) => str.split("").reverse().join("");
+  const reversedName = reverse(filename);
+  return reverse(reversedName.substring(0, reversedName.indexOf(".")));
+};
